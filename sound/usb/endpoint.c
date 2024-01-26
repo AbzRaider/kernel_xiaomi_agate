@@ -136,7 +136,7 @@ static const char *usb_error_string(int err)
     
     
     
-    c	default:
+    	default:
 		return "unknown error";
 	}
 }
