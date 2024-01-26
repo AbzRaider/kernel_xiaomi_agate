@@ -2389,12 +2389,6 @@ static int gf_probe(struct spi_device *spi)
 	}
 
 	__set_bit(EV_KEY, gf_dev->input->evbit);
-<<<<<<< HEAD
-	__set_bit(GF_KEY_INPUT_HOME, gf_dev->input->keybit);
-	__set_bit(GF_KEY_DOUBLE_CLICK, gf_dev->input->keybit);
-=======
->>>>>>> 398a8d9d8f02 (goodix_cap: Stop reporting GF_KEY_HOME to userspace)
-
 	__set_bit(GF_KEY_INPUT_MENU, gf_dev->input->keybit);
 	__set_bit(GF_KEY_INPUT_BACK, gf_dev->input->keybit);
 	__set_bit(GF_KEY_INPUT_POWER, gf_dev->input->keybit);
