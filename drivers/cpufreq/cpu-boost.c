@@ -248,7 +248,9 @@ static void do_input_boost(struct kthread_work *work)
 	/* Enable scheduler boost to migrate tasks to big cluster */
 	if (sched_boost_on_input) {
 		set_sched_boost(1); /* SCHED_ALL_BOOST */
-		get_turbo_feats(7); // Latwncy Boost Mode
+		int task_turbo = get_turbo_feats(7); // Latency Boost Mode
+		pr_info("task_turbo_feats is change to %d successfully",
+		task_turbo);
 		sched_boost_active = true;
 	}
 
