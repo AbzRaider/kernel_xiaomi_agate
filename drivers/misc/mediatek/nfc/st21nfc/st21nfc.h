@@ -20,12 +20,15 @@
 #define ST21NFC_GET_POLARITY _IO(ST21NFC_MAGIC, 0x07)
 #define ST21NFC_RECOVERY _IO(ST21NFC_MAGIC, 0x08)
 #define ST21NFC_USE_ESE _IOW(ST21NFC_MAGIC, 0x09, unsigned int)
+#define ST21NFC_CLK_ENABLE _IOR(ST21NFC_MAGIC, 0x11, unsigned int)
+#define ST21NFC_CLK_DISABLE _IOR(ST21NFC_MAGIC, 0x12, unsigned int)
+#define ST21NFC_CLK_STATE _IOR(ST21NFC_MAGIC, 0x13, unsigned int)
 
 // Keep compatibility with older user applications.
 #define ST21NFC_LEGACY_GET_WAKEUP _IOR(ST21NFC_MAGIC, 0x01, unsigned int)
 #define ST21NFC_LEGACY_PULSE_RESET _IOR(ST21NFC_MAGIC, 0x02, unsigned int)
-#define ST21NFC_LEGACY_SET_POLARITY_RISING \
-  _IOR(ST21NFC_MAGIC, 0x03, unsigned int)
+#define ST21NFC_LEGACY_SET_POLARITY_RISING                                     \
+	_IOR(ST21NFC_MAGIC, 0x03, unsigned int)
 #define ST21NFC_LEGACY_SET_POLARITY_HIGH _IOR(ST21NFC_MAGIC, 0x05, unsigned int)
 #define ST21NFC_LEGACY_GET_POLARITY _IOR(ST21NFC_MAGIC, 0x07, unsigned int)
 #define ST21NFC_LEGACY_RECOVERY _IOR(ST21NFC_MAGIC, 0x08, unsigned int)
@@ -37,5 +40,8 @@
 void st21nfc_register_st54spi_cb(void (*cb)(int, void *), void *data);
 void st21nfc_unregister_st54spi_cb(void);
 
-#define ACCESS_OK(x,y,z) access_ok(x,y,z)
-
+#if (defined(ST21NFCD_MTK54) || defined(ST21NFCD_MTK510) || defined(ST21NFCD_QCOM54) || defined(ST21NFCD_QCOM510) || defined(ST21NFCD_GEXY510))
+#define ACCESS_OK(x, y, z) access_ok(y, z)
+#else
+#define ACCESS_OK(x, y, z) access_ok(x, y, z)
+#endif
