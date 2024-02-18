@@ -310,34 +310,53 @@ drop:
 
 static int ip_rcv_finish_core(struct net *net, struct sock *sk,
 			      struct sk_buff *skb)
+int udp_v4_early_demux(struct sk_buff *);
+int tcp_v4_early_demux(struct sk_buff *);
+/*
+static int ip_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	const struct iphdr *iph = ip_hdr(skb);
-	int (*edemux)(struct sk_buff *skb);
 	struct net_device *dev = skb->dev;
 	struct rtable *rt;
 	int err;
 
-	if (net->ipv4.sysctl_ip_early_demux &&
+	 if ingress device is enslaved to an L3 master device pass the
+	 * skb to its handler for processing
+	 
+	skb = l3mdev_ip_rcv(skb);
+	if (!skb)
+		return NET_RX_SUCCESS;
+
+	if (READ_ONCE(net->ipv4.sysctl_ip_early_demux) &&
 	    !skb_dst(skb) &&
 	    !skb->sk &&
 	    !ip_is_fragment(iph)) {
-		const struct net_protocol *ipprot;
-		int protocol = iph->protocol;
+		switch (iph->protocol) {
+		case IPPROTO_TCP:
+			if (READ_ONCE(net->ipv4.sysctl_tcp_early_demux)) {
+				tcp_v4_early_demux(skb);
 
-		ipprot = rcu_dereference(inet_protos[protocol]);
-		if (ipprot && (edemux = READ_ONCE(ipprot->early_demux))) {
-			err = edemux(skb);
-			if (unlikely(err))
-				goto drop_error;
-			/* must reload iph, skb->head might have changed */
-			iph = ip_hdr(skb);
+				 must reload iph, skb->head might have changed 
+				iph = ip_hdr(skb);
+			}
+			break;
+		case IPPROTO_UDP:
+			if (READ_ONCE(net->ipv4.sysctl_udp_early_demux)) {
+				err = udp_v4_early_demux(skb);
+				if (unlikely(err))
+					goto drop_error;
+
+				 must reload iph, skb->head might have changed
+				iph = ip_hdr(skb);
+			}
+			break;
 		}
 	}
 
-	/*
+	
 	 *	Initialise the virtual path cache for the packet. It describes
 	 *	how the packet travels inside Linux networking.
-	 */
+	 
 	if (!skb_valid_dst(skb)) {
 		err = ip_route_input_noref(skb, iph->daddr, iph->saddr,
 					   iph->tos, dev);
@@ -368,7 +387,7 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
 		   skb->pkt_type == PACKET_MULTICAST) {
 		struct in_device *in_dev = __in_dev_get_rcu(dev);
 
-		/* RFC 1122 3.3.6:
+		RFC 1122 3.3.6:
 		 *
 		 *   When a host sends a datagram to a link-layer broadcast
 		 *   address, the IP destination address MUST be a legal IP
@@ -382,7 +401,7 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
 		 * in a way a form of multicast and the most common use case for
 		 * this is 802.11 protecting against cross-station spoofing (the
 		 * so-called "hole-196" attack) so do it for both.
-		 */
+		 
 		if (in_dev &&
 		    IN_DEV_ORCONF(in_dev, DROP_UNICAST_IN_L2_MULTICAST))
 			goto drop;
@@ -399,7 +418,7 @@ drop_error:
 		__NET_INC_STATS(net, LINUX_MIB_IPRPFILTER);
 	goto drop;
 }
-
+**/
 static int ip_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	int ret;
