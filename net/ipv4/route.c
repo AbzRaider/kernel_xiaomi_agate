@@ -1512,16 +1512,6 @@ static bool rt_cache_route(struct fib_nh *nh, struct rtable *rt)
 
 static DEFINE_PER_CPU_ALIGNED(struct uncached_list, rt_uncached_list);
 
-void rt_add_uncached_list(struct rtable *rt)
-{
-	struct uncached_list *ul = raw_cpu_ptr(&rt_uncached_list);
-
-	rt->rt_uncached_list = ul;
-
-	spin_lock_bh(&ul->lock);
-	list_add_tail(&rt->rt_uncached, &ul->head);
-	spin_unlock_bh(&ul->lock);
-}
 
 void rt_del_uncached_list(struct rtable *rt)
 {
