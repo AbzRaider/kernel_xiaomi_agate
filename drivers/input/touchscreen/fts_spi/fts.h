@@ -81,13 +81,13 @@
 //#define FTS_FOD_AREA_REPORT
 #define FTS_DEBUG_FS
 
-// Turn off debug
-//#define DEBUG
+// Turn on debug
+#define DEBUG
 
 /*#define USE_ONE_FILE_NODE*/
 
 #ifndef FW_UPDATE_ON_PROBE
-#define EXP_FN_WORK_DELAY_MS				1000
+#define EXP_FN_WORK_DELAY_MS				2000
 #endif
 
 /**** END ****/
