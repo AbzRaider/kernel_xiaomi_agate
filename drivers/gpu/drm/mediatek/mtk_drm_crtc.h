@@ -1,15 +1,7 @@
+/* SPDX-License-Identifier: GPL-2.0 */
 /*
- * Copyright (c) 2015 MediaTek Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ * Copyright (c) 2019 MediaTek Inc.
+*/
 
 #ifndef MTK_DRM_CRTC_H
 #define MTK_DRM_CRTC_H
@@ -30,7 +22,7 @@
 #include "mtk_drm_ddp_addon.h"
 #include <linux/pm_wakeup.h>
 #include "mtk_disp_pmqos.h"
-#include "mi_disp/mi_disp_esd_check.h"
+#include "mi_disp_esd_check.h"
 
 #define MAX_CRTC 3
 #define OVL_LAYER_NR 12L
@@ -371,9 +363,6 @@ enum MTK_CRTC_PROP {
 	CRTC_PROP_USER_SCEN,
 	CRTC_PROP_HDR_ENABLE,
 	CRTC_PROP_OVL_DSI_SEQ,
-#if defined (CONFIG_DRM_PANEL_K16_38_0C_0A_DSC_VDO) || defined (CONFIG_DRM_PANEL_K16_38_0E_0B_DSC_VDO)
-	CRTC_PROP_MI_FOD_SYNC_INFO,
-#endif
 	CRTC_PROP_MAX,
 };
 
@@ -675,9 +664,7 @@ struct mtk_drm_crtc {
 	wait_queue_head_t crtc_status_wq;
 	struct mtk_panel_ext *panel_ext;
 	struct mtk_drm_esd_ctx *esd_ctx;
-#ifdef CONFIG_MI_ESD_CHECK
 	struct mi_esd_ctx *mi_esd_ctx;
-#endif
 #ifdef CONFIG_MTK_ROUND_CORNER_SUPPORT
 	struct mtk_drm_gem_obj *round_corner_gem;
 	struct mtk_drm_gem_obj *round_corner_gem_l;
@@ -690,7 +677,7 @@ struct mtk_drm_crtc {
 	atomic_t vblank_enable_task_active;
 
 	char *wk_lock_name;
-	struct wakeup_source wk_lock;
+	struct wakeup_source *wk_lock;
 
 	struct mtk_drm_fake_vsync *fake_vsync;
 	struct mtk_drm_fake_layer fake_layer;
@@ -783,7 +770,7 @@ int mtk_drm_crtc_enable_vblank(struct drm_device *drm, unsigned int pipe);
 void mtk_drm_crtc_disable_vblank(struct drm_device *drm, unsigned int pipe);
 bool mtk_crtc_get_vblank_timestamp(struct drm_device *dev, unsigned int pipe,
 				 int *max_error,
-				 struct timeval *vblank_time,
+				 ktime_t *vblank_time,
 				 bool in_vblank_irq);
 void mtk_drm_crtc_commit(struct drm_crtc *crtc);
 void mtk_crtc_ddp_irq(struct drm_crtc *crtc, struct mtk_ddp_comp *comp);
